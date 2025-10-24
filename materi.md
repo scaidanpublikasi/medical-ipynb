@@ -13,9 +13,11 @@
 ## 📋 Table of Contents
 
 - [Overview](#-overview)
+- [Machine Learning Overview](#-machine-learning-overview)
 - [Prerequisites](#-prerequisites)
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
+- [Try Pre-trained Model](#-try-pre-trained-model-inference)
 - [Part 1: Kaggle Setup](#part-1-pengenalan-kaggle--setup)
 - [Part 2: Medical Image Segmentation](#part-2-medical-image-segmentation)
 - [Evaluation Metrics](#-evaluation-metrics)
@@ -36,7 +38,8 @@ Workshop ini mengajarkan **Medical Image Segmentation** menggunakan **U-Net** un
 ✅ Menggunakan Kaggle (platform coding gratis dengan GPU!)  
 ✅ Membangun AI untuk "melihat" gambar medis  
 ✅ Melatih model U-Net untuk segmentasi organ  
-✅ Evaluasi dan visualisasi hasil prediksi
+✅ Evaluasi dan visualisasi hasil prediksi  
+✅ **Menggunakan model yang sudah jadi untuk inference** ⭐ NEW!
 
 ### Demo Hasil
 
@@ -47,6 +50,340 @@ Input: CT Scan (Grayscale)  →  Output: Organ Detected (Colored Mask)
 |                               Original Image                                |                                Ground Truth                                |                               AI Prediction                                |
 | :-------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :------------------------------------------------------------------------: |
 | ![Original](https://via.placeholder.com/200x200/808080/FFFFFF?text=CT+Scan) | ![GT](https://via.placeholder.com/200x200/FF0000/FFFFFF?text=Ground+Truth) | ![Pred](https://via.placeholder.com/200x200/00FF00/FFFFFF?text=Prediction) |
+
+---
+
+## 🤖 Machine Learning Overview
+
+### Machine Learning Workflow
+
+![Machine Learning Workflow](https://miro.medium.com/v2/resize:fit:1200/1*oxy_4R--9EQfGyZusb1M5Q.png)
+
+### Proses Machine Learning
+
+Machine Learning adalah proses membuat komputer "belajar" dari data untuk membuat prediksi atau keputusan. Berikut adalah workflow umum dalam machine learning:
+
+```
+Data Collection → Data Preprocessing → Feature Engineering →
+Model Training → Model Evaluation → Model Deployment
+```
+
+#### 1️⃣ **Data Collection**
+
+- Mengumpulkan data (gambar medis, teks, angka, dll)
+- Contoh: CT Scan, MRI, X-Ray untuk medical imaging
+
+#### 2️⃣ **Data Preprocessing**
+
+- Membersihkan data (remove noise, handle missing values)
+- Normalisasi/standardisasi
+- Data augmentation (untuk menambah variasi data)
+
+#### 3️⃣ **Feature Engineering**
+
+- Ekstraksi fitur penting dari data
+- Untuk gambar: edges, textures, shapes
+- Untuk text: word embeddings, TF-IDF
+
+#### 4️⃣ **Model Training**
+
+- Melatih model dengan data training
+- Model belajar pattern dari data
+- Optimasi hyperparameters
+
+#### 5️⃣ **Model Evaluation**
+
+- Test model dengan data yang belum pernah dilihat
+- Metrics: Accuracy, Precision, Recall, F1-Score, dll
+- Validasi performa model
+
+#### 6️⃣ **Model Deployment**
+
+- Deploy model ke production
+- Monitoring performa
+- Re-training jika perlu
+
+---
+
+### Tipe-Tipe Machine Learning
+
+Machine Learning dibagi menjadi beberapa kategori berdasarkan tipe task-nya:
+
+#### 🎯 **1. Supervised Learning**
+
+Model belajar dari data yang sudah dilabeli (ada input dan output yang benar).
+
+##### **A. Classification (Klasifikasi)**
+
+**Tujuan**: Memprediksi kategori/kelas dari input
+
+**Contoh Use Cases:**
+
+- 🏥 **Medical**: Deteksi penyakit (normal vs abnormal)
+- 📧 **Email**: Spam vs Not Spam
+- 🖼️ **Image**: Cat vs Dog classification
+- 💳 **Finance**: Fraud detection (fraud vs legitimate)
+
+**Output**: Kategori diskrit (kelas A, B, C, dst)
+
+```python
+# Example
+Input: Gambar X-Ray
+Output: "Pneumonia" atau "Normal"
+```
+
+##### **B. Regression (Regresi)**
+
+**Tujuan**: Memprediksi nilai numerik kontinu
+
+**Contoh Use Cases:**
+
+- 🏠 **Real Estate**: Prediksi harga rumah
+- 📈 **Stock Market**: Prediksi harga saham
+- 🌡️ **Weather**: Prediksi suhu besok
+- 🏥 **Medical**: Prediksi umur pasien dari CT scan
+- 💰 **Sales**: Prediksi revenue bulan depan
+
+**Output**: Angka kontinu (0.5, 100.3, 1000, dst)
+
+```python
+# Example
+Input: Luas tanah, jumlah kamar, lokasi
+Output: Harga rumah = Rp 1,500,000,000
+```
+
+**Perbedaan Classification vs Regression:**
+
+|            Aspek            |     Classification     |  Regression   |
+| :-------------------------: | :--------------------: | :-----------: |
+|         **Output**          |     Kategori/Label     | Angka kontinu |
+|      **Contoh Output**      | "Cancer" atau "Benign" |  25.5, 100.3  |
+|      **Loss Function**      |     Cross Entropy      |   MSE, MAE    |
+| **Activation (last layer)** |    Softmax/Sigmoid     |    Linear     |
+|   **Evaluation Metrics**    |   Accuracy, F1-Score   | MSE, RMSE, R² |
+
+##### **C. Segmentation (Segmentasi)** ⭐ _Workshop Ini_
+
+**Tujuan**: Memberi label pada setiap pixel/voxel dalam gambar
+
+**Contoh Use Cases:**
+
+- 🏥 **Medical**: Segmentasi organ (liver, kidney, tumor)
+- 🚗 **Autonomous Driving**: Segmentasi jalan, mobil, pedestrian
+- 🛰️ **Satellite**: Segmentasi lahan (hutan, kota, laut)
+- 📸 **Photo Editing**: Background removal
+
+**Output**: Mask/segmentation map (pixel-level labels)
+
+```python
+# Example - Workshop ini!
+Input: CT Scan 3D (128x128x128)
+Output: Segmentation mask (128x128x128)
+        - 0 = background
+        - 1 = organ target
+```
+
+**Tipe Segmentation:**
+
+|           Tipe            |                        Penjelasan                        |        Use Case        |
+| :-----------------------: | :------------------------------------------------------: | :--------------------: |
+| **Semantic Segmentation** | Label per pixel, semua objek kelas sama punya label sama | Segmentasi jalan raya  |
+| **Instance Segmentation** |        Label per pixel, objek yang sama dibedakan        | Deteksi multiple mobil |
+| **Panoptic Segmentation** |               Gabungan semantic + instance               |   Autonomous driving   |
+
+---
+
+#### 🔍 **2. Unsupervised Learning**
+
+Model belajar dari data tanpa label (hanya ada input, tidak ada output yang benar).
+
+##### **A. Clustering (Pengelompokan)**
+
+**Tujuan**: Mengelompokkan data yang mirip ke dalam cluster
+
+**Contoh Use Cases:**
+
+- 👥 **Customer Segmentation**: Kelompokkan customer berdasarkan perilaku
+- 🏥 **Medical**: Kelompokkan pasien dengan gejala serupa
+- 📰 **News**: Kelompokkan berita berdasarkan topik
+- 🧬 **Genomics**: Kelompokkan gen dengan fungsi serupa
+- 🛒 **E-commerce**: Product recommendation berdasarkan similarity
+
+**Output**: Cluster ID (grup 0, 1, 2, dst)
+
+```python
+# Example
+Input: Data pembelian customer (items, frequency, amount)
+Output: Customer segmentation
+        - Cluster 0: High spender
+        - Cluster 1: Occasional buyer
+        - Cluster 2: Window shopper
+```
+
+**Algoritma Clustering:**
+
+- **K-Means**: Paling populer, fast, simple
+- **DBSCAN**: Untuk data dengan noise
+- **Hierarchical Clustering**: Membuat dendrogram
+- **Gaussian Mixture Models**: Probabilistic clustering
+
+##### **B. Dimensionality Reduction**
+
+**Tujuan**: Mengurangi jumlah fitur sambil tetap mempertahankan informasi penting
+
+**Contoh Use Cases:**
+
+- 📊 **Visualization**: Plot data high-dimensional ke 2D/3D
+- 🖼️ **Image Compression**: Compress gambar
+- 🧬 **Genomics**: Reduce ribuan gen menjadi beberapa principal components
+- 📈 **Feature Selection**: Pilih fitur terpenting
+
+**Teknik:**
+
+- **PCA** (Principal Component Analysis)
+- **t-SNE**: Untuk visualisasi
+- **UMAP**: Modern alternative to t-SNE
+- **Autoencoders**: Deep learning approach
+
+---
+
+#### 🎮 **3. Reinforcement Learning**
+
+Model belajar melalui trial-and-error dengan sistem reward/punishment.
+
+**Contoh Use Cases:**
+
+- 🎮 **Gaming**: AlphaGo, Chess AI
+- 🤖 **Robotics**: Robot navigation
+- 🚗 **Autonomous Driving**: Decision making
+- 💰 **Trading**: Algorithmic trading
+- 🎯 **Recommendation**: Personalized content
+
+---
+
+### Roadmap Belajar Machine Learning
+
+Untuk workshop ini, kita fokus ke **Segmentation** (bagian dari Supervised Learning). Tapi Anda bisa eksplorasi tipe lain setelah mahir:
+
+```
+Level 1: Pemula
+├── Classification (Image Classification)
+├── Regression (Linear/Polynomial Regression)
+└── Segmentation ⭐ (Workshop ini!)
+
+Level 2: Intermediate
+├── Object Detection (YOLO, Faster R-CNN)
+├── Time Series (LSTM, Transformers)
+└── Clustering (K-Means, DBSCAN)
+
+Level 3: Advanced
+├── GANs (Generative Adversarial Networks)
+├── Reinforcement Learning
+└── Transfer Learning & Fine-tuning
+```
+
+---
+
+### Kenapa Kita Mulai dari Segmentation?
+
+1. ✅ **Praktis**: Langsung aplikasi ke medical imaging
+2. ✅ **Visual**: Hasil bisa langsung dilihat
+3. ✅ **High Impact**: Medical AI sangat dibutuhkan
+4. ✅ **Foundation**: Konsep bisa diterapkan ke task lain
+5. ✅ **Job Market**: Medical AI engineer in high demand
+
+**Setelah workshop ini**, Anda bisa adaptasi untuk:
+
+- Classification: Ubah output layer & loss function
+- Regression: Ganti output ke continuous value
+- Clustering: Gunakan feature extraction dari encoder
+
+---
+
+### Comparison: Segmentation vs Other ML Tasks
+
+|         Aspek          |  Classification   |   Regression   |    Segmentation    |       Clustering        |
+| :--------------------: | :---------------: | :------------: | :----------------: | :---------------------: |
+|    **Supervised?**     |      ✅ Yes       |     ✅ Yes     |       ✅ Yes       |          ❌ No          |
+|    **Output Type**     |     Category      |     Number     |  Pixel-wise mask   |       Cluster ID        |
+|  **Label Required?**   |      ✅ Yes       |     ✅ Yes     |       ✅ Yes       |          ❌ No          |
+|    **Architecture**    |     CNN + FC      |  CNN + Linear  |     U-Net, FCN     |     K-Means, DBSCAN     |
+|   **Loss Function**    |   Cross Entropy   |    MSE, MAE    |     Dice, IoU      | Within-cluster variance |
+|     **Evaluation**     |   Accuracy, F1    |   RMSE, MAE    |     Dice, IoU      |    Silhouette score     |
+| **Use Case (Medical)** | Disease detection | Age prediction | Organ segmentation |    Patient grouping     |
+
+---
+
+### 🎓 Ekstension untuk Task Lain
+
+Setelah mahir segmentation, Anda bisa extend untuk task lain dengan sedikit modifikasi:
+
+#### **Untuk Classification:**
+
+```python
+# Ubah model architecture
+model = torch.nn.Sequential(
+    UNet(...),  # Feature extractor
+    torch.nn.AdaptiveAvgPool3d(1),  # Global pooling
+    torch.nn.Flatten(),
+    torch.nn.Linear(512, num_classes)  # Classification head
+)
+
+# Loss function
+loss_fn = torch.nn.CrossEntropyLoss()
+```
+
+#### **Untuk Regression:**
+
+```python
+# Ubah output layer
+model = torch.nn.Sequential(
+    UNet(...),  # Feature extractor
+    torch.nn.AdaptiveAvgPool3d(1),
+    torch.nn.Flatten(),
+    torch.nn.Linear(512, 1)  # Single output value
+)
+
+# Loss function
+loss_fn = torch.nn.MSELoss()  # Mean Squared Error
+```
+
+#### **Untuk Clustering:**
+
+```python
+# Extract features menggunakan trained encoder
+encoder = model.encoder  # From trained U-Net
+features = encoder(images)
+
+# Apply clustering
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=3)
+clusters = kmeans.fit_predict(features.cpu().numpy())
+```
+
+---
+
+### 📚 Resources untuk Belajar Lebih Lanjut
+
+**Classification:**
+
+- [Image Classification with PyTorch](https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html)
+- [Transfer Learning Tutorial](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)
+
+**Regression:**
+
+- [Linear Regression Tutorial](https://scikit-learn.org/stable/modules/linear_model.html)
+- [Deep Learning for Regression](https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/)
+
+**Clustering:**
+
+- [Scikit-learn Clustering](https://scikit-learn.org/stable/modules/clustering.html)
+- [K-Means Explained](https://www.youtube.com/watch?v=4b5d3muPQmA)
+
+**General ML:**
+
+- [Google's Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course)
+- [Fast.ai Practical Deep Learning](https://course.fast.ai/)
 
 ---
 
@@ -122,6 +459,190 @@ scikit-learn>=1.3.0
 # Sesuaikan path di code
 python train.py --data_path /path/to/data --epochs 100
 ```
+
+---
+
+## 🎯 Try Pre-trained Model (Inference)
+
+### ⭐ Repository Inference - Model Siap Pakai!
+
+> **Tidak ingin training dari nol?** Langsung coba model AI yang sudah jadi!
+
+**Repository**: [medical-ipynb - Learn Inference](https://github.com/scaidanpublikasi/medical-ipynb)
+
+### 📦 Apa yang Ada di Repository Ini?
+
+✅ **Model AI yang sudah ditraining** (`model.pt`)  
+✅ **Sample gambar medis** untuk dicoba  
+✅ **Script Python untuk inference** (prediksi otomatis)  
+✅ **Dokumentasi lengkap** cara menggunakannya
+
+### 🔄 Perbedaan dengan Repository Utama
+
+| Repository                 |                   Fungsi                    |       Untuk       |
+| :------------------------- | :-----------------------------------------: | :---------------: |
+| `brats-segmentation`       |   **Training** - Cara membuat `model.pt`    | Belajar dari nol  |
+| `medical-ipynb` ⭐ **NEW** | **Inference** - Cara menggunakan `model.pt` | Langsung praktek! |
+
+### 🚀 Cara Menggunakan Model Pre-trained
+
+#### 1️⃣ **Clone Repository Inference**
+
+```bash
+git clone https://github.com/scaidanpublikasi/medical-ipynb.git
+cd medical-ipynb
+```
+
+#### 2️⃣ **Extract File (jika ada .zip)**
+
+Repository ini berisi:
+
+- `model.pt` → Model AI yang sudah ditraining
+- `sample_images/` → Gambar medis untuk dicoba
+- `inference.py` → Script Python untuk prediksi
+- `requirements.txt` → Dependencies
+
+```bash
+# Jika ada file zip, extract dulu
+unzip machine-learning-learn-inference.zip
+```
+
+#### 3️⃣ **Install Dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 4️⃣ **Run Inference Script**
+
+```python
+# Contoh penggunaan:
+python inference.py --model_path model.pt --image_path sample_images/test_image.nii.gz
+```
+
+**Atau langsung di Python:**
+
+```python
+import torch
+import nibabel as nib
+import numpy as np
+from monai.transforms import Compose, LoadImage, EnsureChannelFirst, ResizeWithPadOrCrop, NormalizeIntensity
+from monai.networks.nets import UNet
+
+# 1. Load model yang sudah jadi
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = UNet(
+    spatial_dims=3,
+    in_channels=1,
+    out_channels=1,
+    channels=(32, 64, 128, 256, 512),
+    strides=(2, 2, 2, 2),
+    num_res_units=2
+).to(device)
+
+model.load_state_dict(torch.load("model.pt", map_location=device))
+model.eval()
+
+# 2. Preprocessing gambar
+transforms = Compose([
+    LoadImage(image_only=True),
+    EnsureChannelFirst(),
+    ResizeWithPadOrCrop(spatial_size=(128, 128, 128)),
+    NormalizeIntensity()
+])
+
+# 3. Load gambar sample
+image = transforms("sample_images/test_image.nii.gz")
+image_tensor = torch.from_numpy(image).unsqueeze(0).to(device)
+
+# 4. Prediksi!
+with torch.no_grad():
+    prediction = torch.sigmoid(model(image_tensor))
+    pred_mask = (prediction > 0.5).cpu().numpy().squeeze()
+
+# 5. Simpan hasil
+output_img = nib.Nifti1Image(pred_mask.astype(np.uint8), affine=np.eye(4))
+nib.save(output_img, "prediction_result.nii.gz")
+
+print("✅ Prediksi selesai! Hasil tersimpan di: prediction_result.nii.gz")
+```
+
+#### 5️⃣ **Visualisasi Hasil**
+
+```python
+import matplotlib.pyplot as plt
+
+# Ambil slice tengah untuk visualisasi
+slice_idx = pred_mask.shape[2] // 2
+
+plt.figure(figsize=(12, 4))
+
+# Original image
+plt.subplot(1, 3, 1)
+plt.imshow(image[0, :, :, slice_idx], cmap='gray')
+plt.title('Original CT Scan')
+plt.axis('off')
+
+# Prediction
+plt.subplot(1, 3, 2)
+plt.imshow(pred_mask[:, :, slice_idx], cmap='jet')
+plt.title('AI Prediction')
+plt.axis('off')
+
+# Overlay
+plt.subplot(1, 3, 3)
+plt.imshow(image[0, :, :, slice_idx], cmap='gray')
+plt.imshow(pred_mask[:, :, slice_idx], cmap='jet', alpha=0.5)
+plt.title('Overlay')
+plt.axis('off')
+
+plt.tight_layout()
+plt.savefig('inference_result.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+print("✅ Visualisasi tersimpan di: inference_result.png")
+```
+
+### 📝 Catatan Penting
+
+> 💡 **Tips untuk Peserta Workshop:**
+>
+> - Gunakan repository inference ini jika Anda ingin **langsung mencoba** model tanpa perlu training (hemat waktu!)
+> - Gunakan repository utama (`brats-segmentation`) jika Anda ingin **belajar dari nol** cara membuat model
+
+**Workflow Recommended:**
+
+1. **Coba dulu** inference → Lihat hasilnya → Paham cara kerja model
+2. **Baru belajar** training → Mengerti bagaimana model dibuat
+
+### 🎓 Untuk Peserta Workshop
+
+Anda bebas memilih jalur pembelajaran:
+
+**🏃‍♂️ Jalur Cepat (Inference First):**
+
+```
+1. Clone medical-ipynb
+2. Run inference script
+3. Lihat hasil prediksi
+4. Paham output model
+→ Lalu belajar training di workshop utama
+```
+
+**📚 Jalur Lengkap (Training First):**
+
+```
+1. Ikuti workshop Part 1-2
+2. Training model dari nol
+3. Simpan model.pt
+4. Gunakan untuk inference
+```
+
+### 📚 Resources Tambahan
+
+- **GitHub Inference**: [https://github.com/scaidanpublikasi/medical-ipynb](https://github.com/scaidanpublikasi/medical-ipynb)
+- **GitHub Training**: [Repository utama brats-segmentation]
+- **Sample Data**: Tersedia di repository inference
 
 ---
 
@@ -277,111 +798,164 @@ from monai.networks.nets import UNet
 from monai.losses import DiceCELoss
 from monai.inferers import sliding_window_inference
 
-# Evaluation metrics
-from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score,
-    f1_score, jaccard_score
-)
-
-# Visualization
+# Visualization & metrics
 import matplotlib.pyplot as plt
+from sklearn.metrics import (
+    accuracy_score, precision_score,
+    recall_score, f1_score, jaccard_score
+)
 ```
 
-**📝 Penjelasan:**
+**Penjelasan:**
 
-- `torch`: Framework AI utama
-- `monai`: Toolkit khusus medical imaging
-- `sklearn`: Hitung metrik evaluasi
-- `matplotlib`: Visualisasi grafik
+- **nibabel**: Membaca file medis format `.nii` atau `.nii.gz`
+- **MONAI**: Framework khusus medical imaging (built on PyTorch)
+- **torch**: Deep learning framework
+- **sklearn**: Untuk menghitung metrics
 
 ---
 
 ### Section 2: Load Dataset
 
 ```python
-# Define data directories
-image_dir = "/kaggle/input/costa-adam/imagesTr"      # Training images
-label_dir = "/kaggle/input/costa-adam/labelsTr"      # Training labels
-test_dir  = "/kaggle/input/costa-adam/imagesTs"      # Test images
-label_test_dir = "/kaggle/input/costa-adam/labelsTs" # Test labels
+# Path ke dataset
+image_dir = "/kaggle/input/costa-adam/imagesTr"
+label_dir = "/kaggle/input/costa-adam/labelsTr"
+test_dir = "/kaggle/input/costa-adam/imagesTs"
+label_test_dir = "/kaggle/input/costa-adam/labelsTs"
 
-# Initialize empty lists
-image_paths = []
-label_paths = []
+# List semua file gambar
+image_paths = sorted([
+    os.path.join(image_dir, f)
+    for f in os.listdir(image_dir)
+    if f.endswith((".nii", ".nii.gz"))
+])
 
-# Collect all image files
-for root, _, files in os.walk(image_dir):
-    for file in files:
-        if file.endswith(".nii") or file.endswith(".nii.gz"):
-            image_paths.append(os.path.join(root, file))
+label_paths = sorted([
+    os.path.join(label_dir, f)
+    for f in os.listdir(label_dir)
+    if f.endswith((".nii", ".nii.gz"))
+])
 
-# Collect all label files
-for root, _, files in os.walk(label_dir):
-    for file in files:
-        if file.endswith(".nii") or file.endswith(".nii.gz"):
-            label_paths.append(os.path.join(root, file))
-
-# Sort to ensure matching
-image_paths.sort()
-label_paths.sort()
-
-print(f"✅ Training images: {len(image_paths)}")
-print(f"✅ Training labels: {len(label_paths)}")
-```
-
-**Load test data:**
-
-```python
 test_paths = sorted([
-    os.path.join(test_dir, f) for f in os.listdir(test_dir)
-    if f.endswith(".nii") or f.endswith(".nii.gz")
+    os.path.join(test_dir, f)
+    for f in os.listdir(test_dir)
+    if f.endswith((".nii", ".nii.gz"))
 ])
 
 label_test_paths = sorted([
-    os.path.join(label_test_dir, f) for f in os.listdir(label_test_dir)
-    if f.endswith(".nii") or f.endswith(".nii.gz")
+    os.path.join(label_test_dir, f)
+    for f in os.listdir(label_test_dir)
+    if f.endswith((".nii", ".nii.gz"))
 ])
 
+print(f"✅ Training images: {len(image_paths)}")
+print(f"✅ Training labels: {len(label_paths)}")
 print(f"✅ Test images: {len(test_paths)}")
 print(f"✅ Test labels: {len(label_test_paths)}")
 ```
 
----
+**Expected Output:**
 
-### Section 3: Data Preprocessing
-
-```python
-# Define input size (all images will be resized to this)
-input_size = (128, 128, 128)  # 3D: (depth, height, width)
-
-# Define preprocessing pipeline
-train_transforms = Compose([
-    LoadImaged(keys=["image", "label"]),              # 1. Load files
-    EnsureChannelFirstd(keys=["image", "label"]),     # 2. Format channels
-    Orientationd(keys=["image", "label"], axcodes="RAS"),  # 3. Standard orientation
-    ResizeWithPadOrCropd(keys=["image", "label"], spatial_size=input_size),  # 4. Resize
-    NormalizeIntensityd(keys="image"),                # 5. Normalize pixel values
-    ToTensord(keys=["image", "label"])                # 6. Convert to tensor
-])
+```
+✅ Training images: 100
+✅ Training labels: 100
+✅ Test images: 20
+✅ Test labels: 20
 ```
 
-**🔍 Penjelasan Transform:**
+---
 
-| Transform              | Fungsi             | Analogi                     |
-| ---------------------- | ------------------ | --------------------------- |
-| `LoadImaged`           | Buka file gambar   | Buka file Word              |
-| `EnsureChannelFirstd`  | Format channel     | Atur TV ke channel yg benar |
-| `Orientationd`         | Orientasi standar  | Putar gambar agar tegak     |
-| `ResizeWithPadOrCropd` | Resize gambar      | Crop/zoom foto agar pas     |
-| `NormalizeIntensityd`  | Standarisasi nilai | Samakan brightness          |
-| `ToTensord`            | Ubah ke format AI  | Save as PDF (format baru)   |
+### Section 3: Visualisasi Data
+
+```python
+# Ambil sample pertama
+sample_image = nib.load(image_paths[0])
+sample_label = nib.load(label_paths[0])
+
+# Convert ke numpy array
+image_data = sample_image.get_fdata()
+label_data = sample_label.get_fdata()
+
+print(f"Image shape: {image_data.shape}")
+print(f"Label shape: {label_data.shape}")
+print(f"Image min/max: {image_data.min():.2f} / {image_data.max():.2f}")
+print(f"Label unique values: {np.unique(label_data)}")
+
+# Visualisasi slice tengah
+slice_idx = image_data.shape[2] // 2
+
+plt.figure(figsize=(12, 4))
+
+plt.subplot(1, 3, 1)
+plt.imshow(image_data[:, :, slice_idx], cmap='gray')
+plt.title('CT Scan (Original)')
+plt.axis('off')
+
+plt.subplot(1, 3, 2)
+plt.imshow(label_data[:, :, slice_idx], cmap='jet')
+plt.title('Ground Truth (Label)')
+plt.axis('off')
+
+plt.subplot(1, 3, 3)
+plt.imshow(image_data[:, :, slice_idx], cmap='gray')
+plt.imshow(label_data[:, :, slice_idx], cmap='jet', alpha=0.5)
+plt.title('Overlay')
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
+```
+
+**Output**: Tiga gambar yang menunjukkan CT Scan asli, ground truth, dan overlay-nya.
 
 ---
 
-### Section 4: Split Training & Validation
+### Section 4: Preprocessing & Augmentation
 
 ```python
-# Create data dictionaries
+# Define target size (untuk training lebih cepat)
+input_size = (128, 128, 128)
+
+# Transform pipeline
+transforms = Compose([
+    # 1. Load gambar (.nii.gz → tensor)
+    LoadImaged(keys=["image", "label"]),
+
+    # 2. Pastikan channel first (1, H, W, D)
+    EnsureChannelFirstd(keys=["image", "label"]),
+
+    # 3. Orientasi RAS (Right-Anterior-Superior)
+    Orientationd(keys=["image", "label"], axcodes="RAS"),
+
+    # 4. Resize ke ukuran tetap
+    ResizeWithPadOrCropd(keys=["image", "label"], spatial_size=input_size),
+
+    # 5. Normalisasi intensitas (0-1)
+    NormalizeIntensityd(keys="image"),
+
+    # 6. Convert ke PyTorch tensor
+    ToTensord(keys=["image", "label"])
+])
+
+print("✅ Transforms ready!")
+```
+
+**Penjelasan:**
+
+- **LoadImaged**: Membaca file `.nii.gz`
+- **EnsureChannelFirstd**: Format channel-first (seperti (C, H, W, D))
+- **Orientationd**: Standarisasi orientasi gambar
+- **ResizeWithPadOrCropd**: Resize ke ukuran tetap (128³)
+- **NormalizeIntensityd**: Normalisasi pixel values
+- **ToTensord**: Convert ke PyTorch tensor
+
+---
+
+### Section 5: Dataset Split
+
+```python
+# Buat dictionary untuk dataset
 data_dicts = [
     {"image": img, "label": lbl}
     for img, lbl in zip(image_paths, label_paths)
@@ -391,96 +965,142 @@ data_dicts = [
 train_len = int(0.8 * len(data_dicts))
 val_len = len(data_dicts) - train_len
 
-train_files, val_files = random_split(data_dicts, [train_len, val_len])
+train_files, val_files = random_split(
+    data_dicts,
+    [train_len, val_len],
+    generator=torch.Generator().manual_seed(42)  # Reproducibility
+)
+
+print(f"✅ Training samples: {train_len}")
+print(f"✅ Validation samples: {val_len}")
 
 # Create MONAI datasets
-train_ds = MonaiDataset(train_files, transform=train_transforms)
-val_ds = MonaiDataset(val_files, transform=train_transforms)
+train_ds = MonaiDataset(train_files, transform=transforms)
+val_ds = MonaiDataset(val_files, transform=transforms)
 
 # Create data loaders
-train_loader = DataLoader(train_ds, batch_size=1, shuffle=True)
-val_loader = DataLoader(val_ds, batch_size=1)
+train_loader = DataLoader(
+    train_ds,
+    batch_size=1,  # 3D images are memory-heavy
+    shuffle=True,
+    num_workers=0  # Kaggle constraint
+)
 
-print(f"📊 Training samples: {train_len}")
-print(f"📊 Validation samples: {val_len}")
+val_loader = DataLoader(
+    val_ds,
+    batch_size=1,
+    shuffle=False,
+    num_workers=0
+)
+
+print("✅ DataLoaders ready!")
 ```
 
-**💡 Konsep Split Data:**
+**Output:**
 
 ```
-Total Data (100%)
-    │
-    ├─ Training (80%) → Mengajari AI
-    └─ Validation (20%) → Testing AI
+✅ Training samples: 80
+✅ Validation samples: 20
+✅ DataLoaders ready!
 ```
 
 ---
 
-### Section 5: Build U-Net Model
+### Section 6: Define Model
 
 ```python
-# Check device (GPU or CPU)
+# Check GPU availability
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"🖥️ Using device: {device}")
+print(f"🔧 Using device: {device}")
 
-# Build U-Net model
+# Create U-Net model
 model = UNet(
-    spatial_dims=3,           # 3D images
-    in_channels=1,            # Grayscale input
-    out_channels=1,           # Binary segmentation output
-    channels=(32, 64, 128, 256, 512),  # Feature channels per layer
-    strides=(2, 2, 2, 2),     # Downsampling strides
-    num_res_units=2           # Residual units per layer
+    spatial_dims=3,        # 3D data
+    in_channels=1,         # Grayscale CT scan
+    out_channels=1,        # Binary segmentation
+    channels=(32, 64, 128, 256, 512),  # Feature maps per layer
+    strides=(2, 2, 2, 2),  # Downsampling strides
+    num_res_units=2        # Residual units per block
 ).to(device)
 
-# Define loss function
-loss_fn = DiceCELoss(sigmoid=True)
+print(f"✅ Model created!")
+print(f"📊 Total parameters: {sum(p.numel() for p in model.parameters()):,}")
+```
 
-# Define optimizer
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+**Output:**
 
-# Early stopping parameters
+```
+🔧 Using device: cuda
+✅ Model created!
+📊 Total parameters: 15,234,561
+```
+
+**Penjelasan:**
+
+- **spatial_dims=3**: Karena data 3D (x, y, z)
+- **in_channels=1**: CT scan grayscale
+- **out_channels=1**: Binary mask (organ vs background)
+- **channels**: Jumlah filter di setiap level encoder/decoder
+- **strides**: Faktor downsampling (2 = ukuran dibagi 2)
+
+---
+
+### Section 7: Loss Function & Optimizer
+
+```python
+# Dice-CE Loss (kombinasi Dice + Cross Entropy)
+loss_fn = DiceCELoss(
+    sigmoid=True,       # Aktivasi sigmoid
+    squared_pred=False  # Untuk stabilitas
+)
+
+# Optimizer (Adam)
+optimizer = torch.optim.Adam(
+    model.parameters(),
+    lr=1e-4,           # Learning rate
+    weight_decay=1e-5  # L2 regularization
+)
+
+print("✅ Loss function: Dice-CE Loss")
+print("✅ Optimizer: Adam (lr=1e-4)")
+```
+
+**Penjelasan:**
+
+- **DiceCELoss**: Gabungan Dice Score + Cross Entropy
+  - **Dice**: Fokus pada overlap mask
+  - **Cross Entropy**: Fokus pada pixel-wise classification
+- **Adam**: Optimizer adaptif (paling populer untuk DL)
+
+---
+
+### Section 8: Training Loop
+
+```python
+# Training configuration
+num_epochs = 1000
 best_loss = float('inf')
 patience = 5
 trigger = 0
 
-# History tracking
 train_losses = []
 val_losses = []
 
-print("✅ Model initialized successfully!")
-```
+print("🚀 Starting training...\n")
 
-**🎯 Model Parameters:**
-
-- `spatial_dims=3`: 3D medical images
-- `channels=(32, 64, 128, 256, 512)`: Neurons per layer
-- `lr=1e-4`: Learning rate (kecepatan belajar)
-- `patience=5`: Stop kalau 5 epoch tidak ada progress
-
----
-
-### Section 6: Training Loop
-
-```python
-print("🚀 Starting training...")
-print("⏰ This may take 1-2 hours. Be patient!")
-
-for epoch in range(1000):
-    # ========== TRAINING PHASE ==========
+for epoch in range(num_epochs):
+    # ========== TRAINING ==========
     model.train()
     epoch_loss = 0
 
-    for batch in train_loader:
-        # Get data
-        x = batch["image"].to(device)
-        y = batch["label"].to(device)
+    for batch_idx, batch_data in enumerate(train_loader):
+        # Move data to device
+        inputs = batch_data["image"].to(device)
+        labels = batch_data["label"].to(device)
 
         # Forward pass
-        y_pred = model(x)
-
-        # Calculate loss
-        loss = loss_fn(y_pred, y)
+        outputs = model(inputs)
+        loss = loss_fn(outputs, labels)
 
         # Backward pass
         optimizer.zero_grad()
@@ -493,58 +1113,98 @@ for epoch in range(1000):
     epoch_loss /= len(train_loader)
     train_losses.append(epoch_loss)
 
-    # ========== VALIDATION PHASE ==========
+    # ========== VALIDATION ==========
     model.eval()
     val_loss = 0
 
     with torch.no_grad():
-        for val_batch in val_loader:
-            val_x = val_batch["image"].to(device)
-            val_y = val_batch["label"].to(device)
-            val_pred = model(val_x)
-            val_loss += loss_fn(val_pred, val_y).item()
+        for val_data in val_loader:
+            val_inputs = val_data["image"].to(device)
+            val_labels = val_data["label"].to(device)
+            val_outputs = model(val_inputs)
+            val_loss += loss_fn(val_outputs, val_labels).item()
 
     val_loss /= len(val_loader)
     val_losses.append(val_loss)
 
     # Print progress
-    print(f"Epoch {epoch+1:3d} | Train Loss: {epoch_loss:.4f} | Val Loss: {val_loss:.4f}")
+    print(f"Epoch {epoch+1:3d}/{num_epochs} | "
+          f"Train Loss: {epoch_loss:.4f} | "
+          f"Val Loss: {val_loss:.4f}")
 
     # ========== EARLY STOPPING ==========
     if val_loss < best_loss:
         best_loss = val_loss
         trigger = 0
+        # Save best model
         torch.save(model.state_dict(), "/kaggle/working/best_model.pt")
-        print("    ✅ Model saved!")
+        print(f"    ✅ New best model saved! (Val Loss: {best_loss:.4f})")
     else:
         trigger += 1
+        print(f"    ⚠️ No improvement ({trigger}/{patience})")
+
         if trigger >= patience:
-            print("🛑 Early stopping triggered!")
+            print(f"\n🛑 Early stopping triggered at epoch {epoch+1}")
             break
 
-print("🎉 Training completed!")
+print("\n🎉 Training completed!")
+print(f"📊 Best validation loss: {best_loss:.4f}")
 ```
 
-**📈 Training Process:**
+**Expected Output:**
 
 ```
-Epoch 1: Train Loss: 0.8234 | Val Loss: 0.7891 ✅ Model saved!
-Epoch 2: Train Loss: 0.7123 | Val Loss: 0.6543 ✅ Model saved!
-Epoch 3: Train Loss: 0.6234 | Val Loss: 0.5987 ✅ Model saved!
+🚀 Starting training...
+
+Epoch   1/1000 | Train Loss: 0.6234 | Val Loss: 0.5891
+    ✅ New best model saved! (Val Loss: 0.5891)
+Epoch   2/1000 | Train Loss: 0.5123 | Val Loss: 0.4856
+    ✅ New best model saved! (Val Loss: 0.4856)
 ...
+Epoch  45/1000 | Train Loss: 0.1234 | Val Loss: 0.1356
+    ⚠️ No improvement (1/5)
+...
+🛑 Early stopping triggered at epoch 50
+
+🎉 Training completed!
+📊 Best validation loss: 0.1289
 ```
 
 ---
 
-### Section 7: Model Evaluation
+### Section 9: Plot Training Progress
+
+```python
+plt.figure(figsize=(12, 6))
+
+plt.plot(range(1, len(train_losses)+1), train_losses, 'b-o', label='Train Loss', linewidth=2, markersize=4)
+plt.plot(range(1, len(val_losses)+1), val_losses, 'r-x', label='Val Loss', linewidth=2, markersize=4)
+
+plt.xlabel('Epoch', fontsize=12)
+plt.ylabel('Loss', fontsize=12)
+plt.title('Training Progress', fontsize=14, fontweight='bold')
+plt.legend(fontsize=10)
+plt.grid(True, alpha=0.3)
+
+plt.savefig('/kaggle/working/training_curve.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+print("✅ Plot saved: training_curve.png")
+```
+
+---
+
+## 📊 Evaluation Metrics
+
+### Section 10: Evaluate on Validation Set
 
 ```python
 # Load best model
 model.load_state_dict(torch.load("/kaggle/working/best_model.pt"))
 model.eval()
 
-# Initialize metrics dictionary
-metrics = {
+# Initialize metrics
+metrics_list = {
     "Dice": [],
     "IoU": [],
     "Accuracy": [],
@@ -553,243 +1213,160 @@ metrics = {
     "F1": []
 }
 
-print("📊 Evaluating model on validation set...")
+print("🔍 Evaluating model...\n")
 
-# Evaluate on validation set
 with torch.no_grad():
-    for batch in val_loader:
-        x = batch["image"].to(device)
-        y_true = batch["label"].cpu().numpy().flatten()
+    for batch_data in val_loader:
+        # Get predictions
+        inputs = batch_data["image"].to(device)
+        labels = batch_data["label"]
 
-        # Predict
-        y_pred = torch.sigmoid(model(x)).cpu().numpy().flatten()
-        y_bin = (y_pred > 0.5).astype(np.uint8)
+        outputs = model(inputs)
+        preds = torch.sigmoid(outputs).cpu().numpy()
+
+        # Flatten arrays
+        y_true = labels.numpy().flatten()
+        y_pred = (preds > 0.5).astype(np.uint8).flatten()
 
         # Calculate metrics
-        metrics["Dice"].append(f1_score(y_true, y_bin))
-        metrics["IoU"].append(jaccard_score(y_true, y_bin))
-        metrics["Accuracy"].append(accuracy_score(y_true, y_bin))
-        metrics["Precision"].append(precision_score(y_true, y_bin))
-        metrics["Recall"].append(recall_score(y_true, y_bin))
-        metrics["F1"].append(f1_score(y_true, y_bin))
+        metrics_list["Dice"].append(f1_score(y_true, y_pred, zero_division=0))
+        metrics_list["IoU"].append(jaccard_score(y_true, y_pred, zero_division=0))
+        metrics_list["Accuracy"].append(accuracy_score(y_true, y_pred))
+        metrics_list["Precision"].append(precision_score(y_true, y_pred, zero_division=0))
+        metrics_list["Recall"].append(recall_score(y_true, y_pred, zero_division=0))
+        metrics_list["F1"].append(f1_score(y_true, y_pred, zero_division=0))
 
 # Print results
-print("\n" + "="*50)
-print("           VALIDATION METRICS")
-print("="*50)
-for metric_name, values in metrics.items():
-    avg_value = np.mean(values)
-    print(f"{metric_name:12s}: {avg_value:.4f}")
-print("="*50)
+print("📊 VALIDATION METRICS")
+print("=" * 40)
+for metric, values in metrics_list.items():
+    mean_val = np.mean(values)
+    std_val = np.std(values)
+    print(f"{metric:12s}: {mean_val:.4f} ± {std_val:.4f}")
 ```
 
 **Expected Output:**
 
 ```
-==================================================
-           VALIDATION METRICS
-==================================================
-Dice        : 0.8542
-IoU         : 0.7823
-Accuracy    : 0.9234
-Precision   : 0.8765
-Recall      : 0.8432
-F1          : 0.8542
-==================================================
+🔍 Evaluating model...
+
+📊 VALIDATION METRICS
+========================================
+Dice        : 0.8567 ± 0.0234
+IoU         : 0.7812 ± 0.0312
+Accuracy    : 0.9456 ± 0.0123
+Precision   : 0.8734 ± 0.0267
+Recall      : 0.8423 ± 0.0289
+F1          : 0.8567 ± 0.0234
 ```
 
 ---
 
-### Section 8: Testing on New Data
+### Section 11: Visualisasi Prediksi
 
 ```python
-# Prepare test transforms
-test_transforms = Compose([
-    LoadImaged(keys=["image", "label"]),
-    EnsureChannelFirstd(keys=["image", "label"]),
-    Orientationd(keys=["image", "label"], axcodes="RAS"),
-    ResizeWithPadOrCropd(keys=["image", "label"], spatial_size=input_size),
-    NormalizeIntensityd(keys="image"),
-    ToTensord(keys=["image", "label"])
-])
+# Ambil sample dari validation set
+sample_idx = 0
+sample_batch = val_ds[sample_idx]
 
-# Create test dataset
+# Predict
+with torch.no_grad():
+    sample_input = sample_batch["image"].unsqueeze(0).to(device)
+    sample_pred = torch.sigmoid(model(sample_input)).cpu().numpy()[0, 0]
+    sample_pred_binary = (sample_pred > 0.5).astype(np.uint8)
+
+# Get ground truth
+sample_image = sample_batch["image"].cpu().numpy()[0]
+sample_label = sample_batch["label"].cpu().numpy()[0]
+
+# Visualize middle slice
+slice_idx = sample_image.shape[2] // 2
+
+plt.figure(figsize=(15, 5))
+
+# Original
+plt.subplot(1, 4, 1)
+plt.imshow(sample_image[:, :, slice_idx], cmap='gray')
+plt.title('Original CT Scan', fontsize=12, fontweight='bold')
+plt.axis('off')
+
+# Ground Truth
+plt.subplot(1, 4, 2)
+plt.imshow(sample_label[:, :, slice_idx], cmap='jet')
+plt.title('Ground Truth', fontsize=12, fontweight='bold')
+plt.axis('off')
+
+# Prediction
+plt.subplot(1, 4, 3)
+plt.imshow(sample_pred_binary[:, :, slice_idx], cmap='jet')
+plt.title('AI Prediction', fontsize=12, fontweight='bold')
+plt.axis('off')
+
+# Overlay
+plt.subplot(1, 4, 4)
+plt.imshow(sample_image[:, :, slice_idx], cmap='gray')
+plt.imshow(sample_pred_binary[:, :, slice_idx], cmap='jet', alpha=0.5)
+plt.title('Overlay', fontsize=12, fontweight='bold')
+plt.axis('off')
+
+plt.tight_layout()
+plt.savefig('/kaggle/working/prediction_sample.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+print("✅ Visualization saved: prediction_sample.png")
+```
+
+---
+
+### Section 12: Evaluate on Test Set (Optional)
+
+```python
+# Prepare test data
 test_dicts = [
     {"image": img, "label": lbl}
     for img, lbl in zip(test_paths, label_test_paths)
 ]
-test_ds = MonaiDataset(test_dicts, transform=test_transforms)
-test_loader = DataLoader(test_ds, batch_size=1)
 
-# Create output directory
-os.makedirs("/kaggle/working/predictions", exist_ok=True)
+test_ds = MonaiDataset(test_dicts, transform=transforms)
+test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
 
-# Initialize test metrics
+# Evaluate
 test_metrics = {
-    "Dice": [], "IoU": [], "Accuracy": [],
-    "Precision": [], "Recall": [], "F1": []
+    "Dice": [],
+    "IoU": []
 }
 
-print("🧪 Testing on unseen data...")
-
-# Test loop
-for i, test_batch in enumerate(test_loader):
-    x = test_batch["image"].to(device)
-    y_true = test_batch["label"].cpu().numpy().flatten()
-
-    with torch.no_grad():
-        # Sliding window inference for large images
-        pred = sliding_window_inference(
-            x,
-            roi_size=input_size,
-            sw_batch_size=1,
-            predictor=model
-        )
-        pred_np = torch.sigmoid(pred).cpu().numpy()[0, 0]
-        pred_bin = (pred_np > 0.5).astype(np.uint8)
-
-    # Save prediction
-    pred_nii = nib.Nifti1Image(pred_bin, affine=np.eye(4))
-    nib.save(pred_nii, f"/kaggle/working/predictions/pred_{i}.nii.gz")
-
-    # Calculate metrics
-    y_pred_flat = pred_bin.flatten()
-    test_metrics["Dice"].append(f1_score(y_true, y_pred_flat))
-    test_metrics["IoU"].append(jaccard_score(y_true, y_pred_flat))
-    test_metrics["Accuracy"].append(accuracy_score(y_true, y_pred_flat))
-    test_metrics["Precision"].append(precision_score(y_true, y_pred_flat))
-    test_metrics["Recall"].append(recall_score(y_true, y_pred_flat))
-    test_metrics["F1"].append(f1_score(y_true, y_pred_flat))
-
-    print(f"  Processed test image {i+1}/{len(test_loader)}")
-
-# Print test results
-print("\n" + "="*50)
-print("              TEST METRICS")
-print("="*50)
-for metric_name, values in test_metrics.items():
-    avg_value = np.mean(values)
-    print(f"{metric_name:12s}: {avg_value:.4f}")
-print("="*50)
-```
-
----
-
-### Section 9: Visualization
-
-**1. Plot Training History:**
-
-```python
-plt.figure(figsize=(12, 6))
-
-epochs = range(1, len(train_losses) + 1)
-
-plt.plot(epochs, train_losses, 'b-o', label='Training Loss', linewidth=2)
-plt.plot(epochs, val_losses, 'r-x', label='Validation Loss', linewidth=2)
-
-plt.xlabel('Epoch', fontsize=14)
-plt.ylabel('Loss', fontsize=14)
-plt.title('📈 Training & Validation Loss Progress', fontsize=16, fontweight='bold')
-plt.legend(fontsize=12)
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.savefig('/kaggle/working/training_curve.png', dpi=300)
-plt.show()
-
-print("✅ Training curve saved to: /kaggle/working/training_curve.png")
-```
-
-**2. Visualize Predictions:**
-
-```python
-print("🖼️ Visualizing predictions...")
-
-model.eval()
-num_samples = 3
+print("🧪 Testing on unseen data...\n")
 
 with torch.no_grad():
-    for i, batch in enumerate(val_loader):
-        if i >= num_samples:
-            break
+    for test_data in test_loader:
+        inputs = test_data["image"].to(device)
+        labels = test_data["label"]
 
-        image = batch["image"].to(device)
-        label = batch["label"].to(device)
+        outputs = model(inputs)
+        preds = torch.sigmoid(outputs).cpu().numpy()
 
-        # Predict
-        output = torch.sigmoid(model(image))
-        pred = (output > 0.5).float()
+        y_true = labels.numpy().flatten()
+        y_pred = (preds > 0.5).astype(np.uint8).flatten()
 
-        # Get numpy arrays
-        img_np = image[0].cpu().numpy()[0]
-        label_np = label[0].cpu().numpy()[0]
-        pred_np = pred[0].cpu().numpy()[0]
+        test_metrics["Dice"].append(f1_score(y_true, y_pred, zero_division=0))
+        test_metrics["IoU"].append(jaccard_score(y_true, y_pred, zero_division=0))
 
-        # Get middle slice
-        mid_slice = img_np.shape[0] // 2
-
-        # Create figure
-        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-
-        # Original image
-        axes[0].imshow(img_np[mid_slice], cmap='gray')
-        axes[0].set_title('🖼️ Original Image', fontsize=14, fontweight='bold')
-        axes[0].axis('off')
-
-        # Ground truth
-        axes[1].imshow(img_np[mid_slice], cmap='gray')
-        axes[1].imshow(label_np[mid_slice], cmap='jet', alpha=0.5)
-        axes[1].set_title('✅ Ground Truth', fontsize=14, fontweight='bold')
-        axes[1].axis('off')
-
-        # Prediction
-        axes[2].imshow(img_np[mid_slice], cmap='gray')
-        axes[2].imshow(pred_np[mid_slice], cmap='jet', alpha=0.5)
-        axes[2].set_title('🤖 AI Prediction', fontsize=14, fontweight='bold')
-        axes[2].axis('off')
-
-        plt.tight_layout()
-        plt.savefig(f'/kaggle/working/prediction_{i}.png', dpi=300, bbox_inches='tight')
-        plt.show()
-
-        print(f"Sample {i+1}/{num_samples} visualized ✅")
-
-print("\n✅ All visualizations saved!")
-```
-
----
-
-## 📊 Evaluation Metrics
-
-### Metrics Explained:
-
-| Metric            | Formula                                            | Interpretation                            | Good Value |
-| ----------------- | -------------------------------------------------- | ----------------------------------------- | ---------- |
-| **Dice Score**    | `2 * (Pred ∩ GT) / (Pred + GT)`                    | Overlap similarity                        | > 0.80     |
-| **IoU (Jaccard)** | `(Pred ∩ GT) / (Pred ∪ GT)`                        | Intersection over Union                   | > 0.70     |
-| **Accuracy**      | `Correct Pixels / Total Pixels`                    | Overall correctness                       | > 0.90     |
-| **Precision**     | `True Positive / (True Positive + False Positive)` | How many predicted positives are correct? | > 0.85     |
-| **Recall**        | `True Positive / (True Positive + False Negative)` | How many actual positives are detected?   | > 0.85     |
-| **F1 Score**      | `2 * (Precision * Recall) / (Precision + Recall)`  | Harmonic mean of Precision & Recall       | > 0.85     |
-
-### Visual Guide:
-
-```
-Ground Truth:    [████░░░░]
-Prediction:      [███░░░░░]
-                  ^^^
-                  TP (True Positive)
-
-Dice = 2 * 3 / (3 + 3) = 1.0 (Perfect!)
-IoU = 3 / (3 + 0) = 1.0 (Perfect!)
+print("📊 TEST SET METRICS")
+print("=" * 40)
+print(f"Dice Score: {np.mean(test_metrics['Dice']):.4f}")
+print(f"IoU Score : {np.mean(test_metrics['IoU']):.4f}")
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Issue 1: "CUDA Out of Memory"
+### Common Issues & Solutions
 
-**Symptoms:**
+#### 1. Out of Memory (OOM) Error
+
+**Error:**
 
 ```
 RuntimeError: CUDA out of memory
@@ -798,603 +1375,377 @@ RuntimeError: CUDA out of memory
 **Solutions:**
 
 ```python
-# Solution 1: Reduce input size
+# A. Reduce batch size
+train_loader = DataLoader(train_ds, batch_size=1)  # Default: 1
+
+# B. Reduce input size
 input_size = (96, 96, 96)  # Instead of (128, 128, 128)
 
-# Solution 2: Reduce model channels
-model = UNet(
-    channels=(16, 32, 64, 128, 256),  # Instead of (32, 64, 128, 256, 512)
-)
-
-# Solution 3: Clear cache
-import torch
-torch.cuda.empty_cache()
-```
-
----
-
-### Issue 2: "Dataset Not Found"
-
-**Symptoms:**
-
-```
-FileNotFoundError: [Errno 2] No such file or directory
-```
-
-**Solutions:**
-
-```python
-# Check dataset structure
-import os
-print(os.listdir('/kaggle/input'))
-
-# Verify path exactly matches
-image_dir = "/kaggle/input/your-dataset-name/imagesTr"  # Check spelling!
-```
-
----
-
-### Issue 3: "Training Stuck / Not Progressing"
-
-**Solutions:**
-
-```python
-# Add progress indicator
-from tqdm import tqdm
-
-for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}"):
-    # ... training code ...
-```
-
----
-
-### Issue 4: "Poor Performance (Dice < 0.50)"
-
-**Debugging Steps:**
-
-1. **Check data quality:**
-
-```python
-# Visualize raw data
-import matplotlib.pyplot as plt
-img = nib.load(image_paths[0]).get_fdata()
-plt.imshow(img[:, :, img.shape[2]//2], cmap='gray')
-plt.show()
-```
-
-2. **Check preprocessing:**
-
-```python
-# Print shapes after transform
-batch = next(iter(train_loader))
-print(f"Image shape: {batch['image'].shape}")
-print(f"Label shape: {batch['label'].shape}")
-```
-
-3. **Adjust learning rate:**
-
-```python
-# Try different values
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)  # Faster
-# or
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)  # Slower
-```
-
----
-
-## ❓ FAQ
-
-### Q1: Kenapa training lama sekali (1-2 jam)?
-
-**A:** Medical imaging 3D sangat besar (128x128x128 = 2 juta voxels!). Ini normal. Pastikan GPU aktif untuk mempercepat.
-
----
-
-### Q2: Berapa Dice Score yang bagus?
-
-**A:**
-
-- 0.80+ = Excellent ✅
-- 0.70-0.79 = Good ✅
-- 0.60-0.69 = Fair ⚠️
-- < 0.60 = Need improvement ❌
-
----
-
-### Q3: Bisa pakai arsitektur lain selain U-Net?
-
-**A:** Bisa! Coba:
-
-```python
-from monai.networks.nets import AttentionUnet, UNETR, SwinUNETR
-
-# Attention U-Net (U-Net + Attention mechanism)
-model = AttentionUnet(
-    spatial_dims=3,
-    in_channels=1,
-    out_channels=1,
-    channels=(32, 64, 128, 256),
-    strides=(2, 2, 2)
-).to(device)
-
-# UNETR (Transformer-based)
-model = UNETR(
-    in_channels=1,
-    out_channels=1,
-    img_size=(128, 128, 128),
-    feature_size=16,
-    hidden_size=768,
-    mlp_dim=3072,
-    num_heads=12,
-).to(device)
-```
-
----
-
-### Q4: Bagaimana cara improve model?
-
-**A:** Tips meningkatkan performa:
-
-1. **Data Augmentation:**
-
-```python
-from monai.transforms import RandRotate90d, RandFlipd, RandGaussianNoised
-
-train_transforms = Compose([
-    LoadImaged(keys=["image", "label"]),
-    RandRotate90d(keys=["image", "label"], prob=0.5, spatial_axes=(0, 2)),
-    RandFlipd(keys=["image", "label"], prob=0.5, spatial_axes=[0]),
-    RandGaussianNoised(keys=["image"], prob=0.3),
-    # ... other transforms ...
-])
-```
-
-2. **Learning Rate Scheduling:**
-
-```python
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
-
-# In training loop after validation:
-scheduler.step(val_loss)
-```
-
-3. **Ensemble Models:**
-
-```python
-# Train multiple models and average predictions
-predictions = []
-for model_path in ['model1.pt', 'model2.pt', 'model3.pt']:
-    model.load_state_dict(torch.load(model_path))
-    pred = model(x)
-    predictions.append(pred)
-
-final_pred = torch.mean(torch.stack(predictions), dim=0)
-```
-
----
-
-### Q5: Bisa deploy model ini ke production?
-
-**A:** Bisa! Step-by-step:
-
-1. **Export model:**
-
-```python
-# Save as TorchScript
-scripted_model = torch.jit.script(model)
-torch.jit.save(scripted_model, "model_scripted.pt")
-
-# Or save as ONNX
-dummy_input = torch.randn(1, 1, 128, 128, 128).to(device)
-torch.onnx.export(model, dummy_input, "model.onnx")
-```
-
-2. **Create inference script:**
-
-```python
-def predict(image_path):
-    # Load image
-    img = nib.load(image_path).get_fdata()
-
-    # Preprocess
-    img_tensor = preprocess(img)
-
-    # Predict
-    with torch.no_grad():
-        pred = model(img_tensor)
-        pred_mask = (torch.sigmoid(pred) > 0.5).cpu().numpy()
-
-    return pred_mask
-```
-
-3. **Deploy options:**
-
-- FastAPI / Flask (REST API)
-- Docker container
-- Cloud (AWS/GCP/Azure)
-- Mobile (ONNX Runtime)
-
----
-
-### Q6: Dataset saya beda format (DICOM), gimana?
-
-**A:** Pakai library tambahan:
-
-```python
-# Install pydicom
-!pip install pydicom
-
-# Load DICOM
-import pydicom
-
-def load_dicom_series(folder_path):
-    slices = []
-    for filename in sorted(os.listdir(folder_path)):
-        ds = pydicom.dcmread(os.path.join(folder_path, filename))
-        slices.append(ds.pixel_array)
-
-    volume = np.stack(slices, axis=-1)
-    return volume
-
-# Convert DICOM to NIfTI
-volume = load_dicom_series('/path/to/dicom/folder')
-nifti_img = nib.Nifti1Image(volume, affine=np.eye(4))
-nib.save(nifti_img, 'output.nii.gz')
-```
-
----
-
-### Q7: Bisa pakai pre-trained model?
-
-**A:** Bisa! MONAI punya model zoo:
-
-```python
-from monai.bundle import download
-
-# Download pre-trained model
-download(name="spleen_ct_segmentation", bundle_dir="./models")
-
-# Load pre-trained weights
-from monai.networks.nets import UNet
-model = UNet(...)
-model.load_state_dict(torch.load("./models/spleen_ct_segmentation/model.pt"))
-
-# Fine-tune on your data
-for param in model.parameters():
-    param.requires_grad = True  # Unfreeze all layers
-
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
-# ... continue training ...
-```
-
----
-
-## 💡 Tips & Best Practices
-
-### 🚀 Performance Optimization
-
-1. **Mixed Precision Training (AMP):**
-
-```python
-from torch.cuda.amp import autocast, GradScaler
-
-scaler = GradScaler()
-
-for epoch in range(num_epochs):
-    for batch in train_loader:
-        x, y = batch["image"].to(device), batch["label"].to(device)
-
-        with autocast():
-            y_pred = model(x)
-            loss = loss_fn(y_pred, y)
-
-        optimizer.zero_grad()
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
-```
-
-**Benefit:** 2-3x faster training! 🚀
-
----
-
-2. **Gradient Accumulation:**
-
-```python
+# C. Use gradient accumulation
 accumulation_steps = 4
-
 for i, batch in enumerate(train_loader):
-    x, y = batch["image"].to(device), batch["label"].to(device)
-    y_pred = model(x)
-    loss = loss_fn(y_pred, y) / accumulation_steps
-
+    loss = loss_fn(outputs, labels) / accumulation_steps
     loss.backward()
 
     if (i + 1) % accumulation_steps == 0:
         optimizer.step()
         optimizer.zero_grad()
-```
 
-**Benefit:** Simulate larger batch size without OOM!
+# D. Enable mixed precision training
+from torch.cuda.amp import autocast, GradScaler
+
+scaler = GradScaler()
+with autocast():
+    outputs = model(inputs)
+    loss = loss_fn(outputs, labels)
+
+scaler.scale(loss).backward()
+scaler.step(optimizer)
+scaler.update()
+```
 
 ---
 
-3. **Efficient Data Loading:**
+#### 2. Kaggle GPU Not Available
+
+**Error:**
+
+```
+Using device: cpu
+```
+
+**Solution:**
+
+1. Click **"Settings"** (⚙️) on right panel
+2. Select **"Accelerator" → "GPU T4"**
+3. Click **"Save"**
+4. Restart notebook: **"Session" → "Restart Session"**
+
+---
+
+#### 3. Dataset Not Found
+
+**Error:**
+
+```
+FileNotFoundError: [Errno 2] No such file or directory
+```
+
+**Solution:**
 
 ```python
-train_loader = DataLoader(
-    train_ds,
-    batch_size=2,  # Increase if GPU memory allows
-    shuffle=True,
-    num_workers=4,  # Parallel data loading
-    pin_memory=True,  # Faster CPU to GPU transfer
-    persistent_workers=True  # Keep workers alive
+# Check available datasets
+import os
+print(os.listdir('/kaggle/input'))
+
+# Add dataset manually:
+# 1. Click "+ Add Data" (right panel)
+# 2. Search: "costa adam"
+# 3. Click "Add"
+```
+
+---
+
+#### 4. Module Not Found
+
+**Error:**
+
+```
+ModuleNotFoundError: No module named 'monai'
+```
+
+**Solution:**
+
+```python
+# Install missing packages
+!pip install monai nibabel -q
+
+# Restart kernel: Kernel → Restart
+```
+
+---
+
+#### 5. Training Too Slow
+
+**Solutions:**
+
+```python
+# A. Use smaller input size
+input_size = (64, 64, 64)  # Faster but less accurate
+
+# B. Reduce model complexity
+model = UNet(
+    spatial_dims=3,
+    in_channels=1,
+    out_channels=1,
+    channels=(16, 32, 64, 128),  # Fewer channels
+    strides=(2, 2, 2),
+    num_res_units=1
+)
+
+# C. Train fewer epochs
+num_epochs = 50  # Instead of 1000
+
+# D. Use smaller dataset
+train_files = train_files[:20]  # First 20 samples only
+```
+
+---
+
+#### 6. Dice Score Too Low (<0.5)
+
+**Possible Causes & Fixes:**
+
+```python
+# A. Check class imbalance
+print(f"Positive pixels: {labels.sum() / labels.numel() * 100:.2f}%")
+
+# If <5%: Use weighted loss
+loss_fn = DiceCELoss(sigmoid=True, lambda_dice=0.7, lambda_ce=0.3)
+
+# B. Adjust learning rate
+optimizer = torch.optim.Adam(model.parameters(), lr=5e-5)  # Smaller LR
+
+# C. Add data augmentation
+from monai.transforms import RandFlipd, RandRotate90d
+
+transforms = Compose([
+    LoadImaged(keys=["image", "label"]),
+    RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
+    RandRotate90d(keys=["image", "label"], prob=0.5, spatial_axes=(0, 1)),
+    # ... (other transforms)
+])
+```
+
+---
+
+#### 7. Notebook Crashes
+
+**Solutions:**
+
+1. **Save frequently**: `Ctrl + S`
+2. **Enable auto-save**: Settings → Auto-save every 2 minutes
+3. **Reduce memory usage**: Close unused tabs
+4. **Restart session**: Session → Restart Session
+
+---
+
+## ❓ FAQ
+
+### General Questions
+
+**Q1: Berapa lama training-nya?**
+
+A: Tergantung GPU dan dataset size:
+
+- GPU T4 (Kaggle): ~2-3 jam (100 epochs)
+- GPU P100 (Kaggle): ~1-2 jam
+- CPU: ❌ Tidak disarankan (sangat lambat!)
+
+---
+
+**Q2: Apakah bisa run di CPU?**
+
+A: Bisa, tapi **sangat lambat** (10-100x lebih lambat dari GPU).
+
+```python
+# Cek device
+device = torch.device("cpu")  # Force CPU
+```
+
+---
+
+**Q3: Dataset apa saja yang bisa dipakai?**
+
+A: Format medical imaging yang didukung:
+
+- ✅ `.nii` / `.nii.gz` (NIfTI)
+- ✅ `.dcm` (DICOM)
+- ✅ `.mha` / `.mhd` (MetaImage)
+- ✅ `.nrrd` (NRRD)
+
+---
+
+**Q4: Apakah bisa untuk segmentasi multi-class?**
+
+A: Ya! Ubah `out_channels`:
+
+```python
+model = UNet(
+    spatial_dims=3,
+    in_channels=1,
+    out_channels=3,  # 3 classes (background, organ1, organ2)
+    # ...
+)
+
+# Use softmax instead of sigmoid
+loss_fn = DiceCELoss(softmax=True)
+```
+
+---
+
+**Q5: Bagaimana cara deploy model?**
+
+A:
+
+```python
+# 1. Save model
+torch.save(model.state_dict(), "model.pt")
+
+# 2. Load di environment baru
+model = UNet(...)
+model.load_state_dict(torch.load("model.pt"))
+model.eval()
+
+# 3. Inference
+with torch.no_grad():
+    prediction = model(new_image)
+```
+
+---
+
+### Technical Questions
+
+**Q6: Apa bedanya Dice Loss dan Cross Entropy?**
+
+A:
+
+|     Metric     |            Focus            |      Best For       |
+| :------------: | :-------------------------: | :-----------------: |
+|   Dice Loss    |   Region overlap (global)   | Imbalanced datasets |
+| Cross Entropy  | Pixel-wise accuracy (local) |  Balanced datasets  |
+| **Dice-CE** ✅ |      Gabungan keduanya      |  **Recommended!**   |
+
+---
+
+**Q7: Kenapa perlu Early Stopping?**
+
+A:
+
+- Mencegah **overfitting** (model terlalu "hafal" training data)
+- **Hemat waktu** (stop jika tidak ada improvement)
+- **Pilih model terbaik** (berdasarkan validation loss)
+
+---
+
+**Q8: Apa itu Skip Connections di U-Net?**
+
+A:
+
+```
+Encoder                Decoder
+  [64] ───────────────→ [64]
+    ↓                     ↑
+  [128] ──────────────→ [128]
+    ↓                     ↑
+  [256] ──────────────→ [256]
+```
+
+**Fungsi:**
+
+- Gabungkan **detail halus** (dari encoder) dengan **semantik kasar** (dari decoder)
+- Hasil: Segmentation lebih akurat!
+
+---
+
+**Q9: Apa itu Sliding Window Inference?**
+
+A: Teknik prediksi untuk gambar besar:
+
+```python
+from monai.inferers import sliding_window_inference
+
+# Predict dengan window kecil
+prediction = sliding_window_inference(
+    inputs=large_image,
+    roi_size=(96, 96, 96),  # Window size
+    sw_batch_size=4,
+    predictor=model,
+    overlap=0.5
 )
 ```
 
----
+**Keuntungan:**
 
-### 📈 Monitoring & Logging
-
-**Use TensorBoard:**
-
-```python
-from torch.utils.tensorboard import SummaryWriter
-
-writer = SummaryWriter('runs/experiment_1')
-
-for epoch in range(num_epochs):
-    # ... training ...
-
-    # Log scalars
-    writer.add_scalar('Loss/train', train_loss, epoch)
-    writer.add_scalar('Loss/val', val_loss, epoch)
-    writer.add_scalar('Metrics/dice', dice_score, epoch)
-
-    # Log images
-    writer.add_images('Images/input', x, epoch)
-    writer.add_images('Images/prediction', pred, epoch)
-
-writer.close()
-
-# View in browser:
-# tensorboard --logdir=runs
-```
+- ✅ Bisa handle gambar sangat besar
+- ✅ Lebih stabil (rata-rata prediksi overlapping windows)
 
 ---
 
-**Use Weights & Biases (W&B):**
+**Q10: Bagaimana cara improve model?**
 
-```python
-import wandb
+A:
 
-# Initialize
-wandb.init(project="medical-segmentation", name="unet-experiment-1")
+1. **Data augmentation**:
 
-# Log config
-wandb.config.update({
-    "learning_rate": 1e-4,
-    "epochs": 100,
-    "batch_size": 1,
-    "architecture": "UNet"
-})
+   ```python
+   from monai.transforms import RandFlipd, RandRotate90d, RandGaussianNoised
 
-# Log metrics
-for epoch in range(num_epochs):
-    # ... training ...
-    wandb.log({
-        "train_loss": train_loss,
-        "val_loss": val_loss,
-        "dice_score": dice_score
-    })
+   transforms = Compose([
+       # ... (transforms lain)
+       RandFlipd(keys=["image", "label"], prob=0.5),
+       RandRotate90d(keys=["image", "label"], prob=0.3),
+       RandGaussianNoised(keys="image", prob=0.2),
+   ])
+   ```
 
-# Log model
-wandb.save('model.pt')
-```
+2. **Deeper model**:
 
----
+   ```python
+   model = UNet(
+       channels=(32, 64, 128, 256, 512, 1024),  # More layers
+       strides=(2, 2, 2, 2, 2)
+   )
+   ```
 
-### 🔬 Experiment Tracking
+3. **Learning rate scheduling**:
 
-**Keep track of experiments:**
+   ```python
+   from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-```python
-import json
-from datetime import datetime
+   scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3)
+   scheduler.step(val_loss)
+   ```
 
-experiment = {
-    "timestamp": datetime.now().isoformat(),
-    "model": "UNet",
-    "input_size": (128, 128, 128),
-    "learning_rate": 1e-4,
-    "batch_size": 1,
-    "epochs_trained": len(train_losses),
-    "best_val_loss": best_loss,
-    "metrics": {
-        "dice": float(np.mean(metrics["Dice"])),
-        "iou": float(np.mean(metrics["IoU"])),
-        "accuracy": float(np.mean(metrics["Accuracy"]))
-    }
-}
-
-# Save experiment log
-with open(f'experiments/{datetime.now().strftime("%Y%m%d_%H%M%S")}.json', 'w') as f:
-    json.dump(experiment, f, indent=2)
-```
+4. **Ensemble models**:
+   ```python
+   # Train 3 models, average predictions
+   pred_final = (pred1 + pred2 + pred3) / 3
+   ```
 
 ---
 
 ## 📚 Resources
 
-### 🎓 Learning Resources
+### Official Documentation
 
-**Courses:**
+- [MONAI Docs](https://docs.monai.io/) - Medical imaging toolkit
+- [PyTorch Docs](https://pytorch.org/docs/) - Deep learning framework
+- [Kaggle Learn](https://www.kaggle.com/learn) - Free courses
+- [NiBabel](https://nipy.org/nibabel/) - Medical image I/O
 
-- [Deep Learning Specialization - Coursera](https://www.coursera.org/specializations/deep-learning)
-- [Fast.ai Practical Deep Learning](https://course.fast.ai/)
-- [Kaggle Learn - Computer Vision](https://www.kaggle.com/learn/computer-vision)
+### Papers & Articles
 
-**Books:**
+- [U-Net: Convolutional Networks for Biomedical Image Segmentation (2015)](https://arxiv.org/abs/1505.04597)
+- [3D U-Net: Learning Dense Volumetric Segmentation from Sparse Annotation (2016)](https://arxiv.org/abs/1606.06650)
+- [nnU-Net: Self-configuring Method for Deep Learning-based Biomedical Image Segmentation (2018)](https://arxiv.org/abs/1809.10486)
 
-- 📖 "Deep Learning for Medical Image Analysis" - Zhou et al.
-- 📖 "Medical Image Analysis" - Atam Dhawan
-- 📖 "Deep Learning" - Ian Goodfellow
+### Datasets
 
-**Papers:**
+- [Medical Segmentation Decathlon](http://medicaldecathlon.com/) - 10 medical segmentation tasks
+- [BraTS Challenge](https://www.med.upenn.edu/cbica/brats/) - Brain tumor segmentation
+- [LIDC-IDRI](https://wiki.cancerimagingarchive.net/display/Public/LIDC-IDRI) - Lung CT scans
 
-- 📄 [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597)
-- 📄 [nnU-Net: Self-adapting Framework for U-Net-Based Medical Image Segmentation](https://arxiv.org/abs/1809.10486)
-- 📄 [Attention U-Net: Learning Where to Look for the Pancreas](https://arxiv.org/abs/1804.03999)
+### Video Tutorials
 
----
+- [U-Net Explained (YouTube)](https://www.youtube.com/watch?v=azM57JuQpQI)
+- [Medical Image Analysis with Deep Learning](https://www.coursera.org/learn/medical-image-analysis)
 
-### 🛠️ Tools & Libraries
+### Community
 
-**Essential:**
-
-- [MONAI](https://monai.io/) - Medical imaging toolkit
-- [PyTorch](https://pytorch.org/) - Deep learning framework
-- [Nibabel](https://nipy.org/nibabel/) - Neuroimaging data I/O
-- [ITK-SNAP](http://www.itksnap.org/) - 3D medical image viewer
-
-**Visualization:**
-
-- [3D Slicer](https://www.slicer.org/) - Medical image visualization
-- [MITK](https://www.mitk.org/) - Medical imaging toolkit
-- [Napari](https://napari.org/) - Multi-dimensional image viewer
-
-**Dataset Sources:**
-
-- [Medical Segmentation Decathlon](http://medicaldecathlon.com/)
-- [Grand Challenges](https://grand-challenge.org/)
-- [The Cancer Imaging Archive (TCIA)](https://www.cancerimagingarchive.net/)
-- [UK Biobank](https://www.ukbiobank.ac.uk/)
-
----
-
-### 🌐 Communities
-
-**Forums & Discussion:**
-
-- [Kaggle Discussion](https://www.kaggle.com/discussions)
-- [MONAI Forum](https://github.com/Project-MONAI/MONAI/discussions)
-- [Reddit r/MachineLearning](https://www.reddit.com/r/MachineLearning/)
+- [Kaggle Medical Imaging Forum](https://www.kaggle.com/discussions)
+- [MONAI GitHub](https://github.com/Project-MONAI/MONAI)
 - [Reddit r/computervision](https://www.reddit.com/r/computervision/)
-
-**Social Media:**
-
-- Twitter: Follow `#medicalAI` `#MedicalImaging` `#DeepLearning`
-- LinkedIn: Join "Medical AI" groups
-- Discord: AI/ML communities
-
----
-
-## 🎯 Next Steps & Project Ideas
-
-### Level 1: Beginner Projects (You're here! ✅)
-
-✅ Run this notebook successfully  
-✅ Understand U-Net architecture  
-✅ Evaluate model performance  
-✅ Visualize predictions
-
----
-
-### Level 2: Intermediate Projects (1-2 months)
-
-**Project 1: Multi-Organ Segmentation**
-
-```
-Goal: Segment multiple organs (liver, kidney, spleen) simultaneously
-Dataset: Medical Segmentation Decathlon Task 10
-Challenge: Multi-class segmentation (out_channels > 1)
-```
-
-**Project 2: Brain Tumor Segmentation**
-
-```
-Goal: Detect and segment brain tumors
-Dataset: BraTS Challenge
-Challenge: Handle multiple MRI modalities (T1, T2, FLAIR, T1ce)
-```
-
-**Project 3: Lung Nodule Detection**
-
-```
-Goal: Detect lung nodules in CT scans
-Dataset: LUNA16
-Challenge: 3D object detection + classification
-```
-
----
-
-### Level 3: Advanced Projects (3-6 months)
-
-**Project 1: Real-time Inference System**
-
-```python
-# FastAPI deployment
-from fastapi import FastAPI, File, UploadFile
-import uvicorn
-
-app = FastAPI()
-
-@app.post("/predict")
-async def predict_endpoint(file: UploadFile = File(...)):
-    # Load and preprocess
-    image = load_medical_image(file)
-
-    # Predict
-    mask = model.predict(image)
-
-    # Return result
-    return {"segmentation": mask.tolist()}
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-```
-
-**Project 2: Active Learning Pipeline**
-
-```
-Goal: Minimize annotation cost with active learning
-Steps:
-1. Train on small labeled dataset
-2. Use model to find uncertain samples
-3. Send uncertain samples to expert for annotation
-4. Retrain model
-5. Repeat until desired performance
-```
-
-**Project 3: Kaggle Competition**
-
-```
-Participate in medical imaging competitions:
-- RSNA competitions (X-ray, CT analysis)
-- SIIM-ISIC Melanoma Classification
-- DIagnostic Questions (DQ) challenge
-```
-
----
-
-## 🏆 Achievements & Milestones
-
-Track your progress:
-
-- [ ] **Setup Master** - Successfully setup Kaggle & run first notebook
-- [ ] **Code Warrior** - Understand and modify training loop
-- [ ] **Metric Maven** - Achieve Dice Score > 0.70
-- [ ] **Visualization Guru** - Create publication-quality figures
-- [ ] **Optimizer** - Reduce training time by 50%
-- [ ] **Experimenter** - Try 5+ different hyperparameters
-- [ ] **Architecture Explorer** - Test 3+ model architectures
-- [ ] **Dataset Collector** - Work with 3+ different datasets
-- [ ] **Competition Ready** - Submit to a Kaggle competition
-- [ ] **Production Pro** - Deploy model as API
-- [ ] **Community Hero** - Help 5+ people in forums
-- [ ] **Knowledge Sharer** - Write a blog post about your learnings
 
 ---
 
@@ -1402,74 +1753,47 @@ Track your progress:
 
 We welcome contributions! Here's how you can help:
 
-### Ways to Contribute:
+### Ways to Contribute
 
-1. **Report Issues**
+1. **Report bugs**: Open an issue on GitHub
+2. **Suggest features**: Submit feature requests
+3. **Improve documentation**: Fix typos, add examples
+4. **Add code**: Submit pull requests
 
-   - Found a bug? Open an issue!
-   - Include error message and steps to reproduce
-
-2. **Improve Documentation**
-
-   - Fix typos
-   - Add explanations
-   - Translate to other languages
-
-3. **Add Features**
-
-   - New preprocessing techniques
-   - Different model architectures
-   - Evaluation metrics
-
-4. **Share Results**
-   - Post your experiments
-   - Share interesting findings
-   - Contribute datasets
-
-### Contribution Process:
+### Contribution Guidelines
 
 ```bash
 # 1. Fork the repository
-git clone https://github.com/yourusername/medical-segmentation-workshop.git
-
 # 2. Create a branch
-git checkout -b feature/amazing-feature
+git checkout -b feature/your-feature-name
 
-# 3. Make changes and commit
-git commit -m "Add amazing feature"
+# 3. Make changes
+# 4. Commit with clear message
+git commit -m "Add: Feature description"
 
-# 4. Push to your fork
-git push origin feature/amazing-feature
+# 5. Push to your fork
+git push origin feature/your-feature-name
 
-# 5. Open a Pull Request
+# 6. Open a Pull Request
 ```
+
+### Code Style
+
+- Follow PEP 8 (Python style guide)
+- Add docstrings to functions
+- Include type hints
+- Write unit tests for new features
 
 ---
 
-## 📜 Citation
+## 📜 License
 
-If you use this workshop in your research or teaching, please cite:
-
-```bibtex
-@misc{medical_segmentation_workshop_2025,
-  title={Medical Image Segmentation Workshop: U-Net Tutorial for Beginners},
-  author={Your Name},
-  year={2025},
-  publisher={GitHub},
-  url={https://github.com/yourusername/medical-segmentation-workshop}
-}
-```
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**.
 
 ```
 MIT License
 
-Copyright (c) 2025 [Your Name]
+Copyright (c) 2025 SCAIDAN Publikasi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1478,34 +1802,10 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+[Full license text...]
 ```
 
----
-
-## 📞 Contact & Support
-
-**Need Help?**
-
-- 📧 Email: your.email@example.com
-- 💬 Kaggle Discussion: [Link to discussion]
-- 🐛 GitHub Issues: [Open an issue](https://github.com/yourusername/repo/issues)
-- 💼 LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)
-- 🐦 Twitter: [@yourhandle](https://twitter.com/yourhandle)
-
-**Office Hours:**
-
-- Every Friday 2-4 PM (GMT+7)
-- Zoom link: [Add your link]
+**TL;DR**: You can use this code freely for any purpose (commercial/non-commercial), but must include the license notice.
 
 ---
 
@@ -1514,65 +1814,24 @@ SOFTWARE.
 Special thanks to:
 
 - **MONAI Team** - For the amazing medical imaging toolkit
-- **PyTorch Team** - For the deep learning framework
-- **Kaggle** - For providing free GPU resources
-- **Medical Segmentation Decathlon** - For the datasets
-- **Community Contributors** - For feedback and improvements
-
-**Inspired by:**
-
-- U-Net paper (Ronneberger et al., 2015)
-- MONAI tutorials and examples
-- Fast.ai teaching methodology
+- **Kaggle** - For free GPU compute
+- **Contributors** - Everyone who helped improve this workshop
+- **Medical AI Community** - For inspiring this project
 
 ---
 
 ## 📊 Project Stats
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/repo?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/repo?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/yourusername/repo?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/repo)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/repo)
-![Last commit](https://img.shields.io/github/last-commit/yourusername/repo)
+![GitHub stars](https://img.shields.io/github/stars/scaidanpublikasi/medical-ipynb?style=social)
+![GitHub forks](https://img.shields.io/github/forks/scaidanpublikasi/medical-ipynb?style=social)
+![GitHub issues](https://img.shields.io/github/issues/scaidanpublikasi/medical-ipynb)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/scaidanpublikasi/medical-ipynb)
 
 ---
 
-## 🗺️ Roadmap
+## 📈 Roadmap
 
-### Q1 2025
-
-- [x] Launch workshop v1.0
-- [x] Create comprehensive documentation
-- [ ] Add video tutorials
-- [ ] Create interactive Jupyter notebook
-
-### Q2 2025
-
-- [ ] Multi-language support (Indonesian, Spanish, Chinese)
-- [ ] Add more dataset examples
-- [ ] Create Docker container
-- [ ] Launch companion YouTube series
-
-### Q3 2025
-
-- [ ] Add advanced architectures (Transformer-based)
-- [ ] Create mobile deployment guide
-- [ ] Add more visualization tools
-- [ ] Launch online certification
-
-### Q4 2025
-
-- [ ] Create online course platform
-- [ ] Add real-time inference examples
-- [ ] Build community forum
-- [ ] Host virtual workshop events
-
----
-
-## 📈 Change Log
-
-### Version 1.0.0 (2025-10-22)
+### Current (v1.0.0)
 
 - ✨ Initial release
 - 📝 Complete documentation
@@ -1827,6 +2086,7 @@ You've learned:
 - ✅ U-Net architecture
 - ✅ Training deep learning models
 - ✅ Evaluating model performance
+- ✅ Using pre-trained models for inference ⭐
 
 **Remember:**
 
@@ -1841,12 +2101,13 @@ Keep learning, keep coding, and don't be afraid to experiment!
 3. 📢 Share with others learning AI
 4. 💬 Join our community
 5. 🚀 Start your own medical AI project!
+6. 🎯 Try the inference repository untuk praktek langsung!
 
 ---
 
 **Made with ❤️ for AI learners worldwide**
 
-_Last updated: October 22, 2025_
+_Last updated: October 24, 2025_
 
 ---
 
